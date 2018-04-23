@@ -1,7 +1,7 @@
-﻿/*Author: Nina Nguyen
+/*Author: Nina Nguyen
  *Filename: EncryptWord in C#
- *Date: 4/11/2018
- *Version: 1 
+ *Date: 4/22/2018
+ *Version: 2 
  * 
  */
 
@@ -78,24 +78,41 @@ using System.Threading.Tasks;
 
 namespace encryptWord
 {
-    class encryptWord
+    class EncryptWord
     {
 
         //constructor, initialize private fields by calling reset(). Initial 
         //state is off.
         //all int and strings are empty after every construction call
-        public encryptWord()
+        public EncryptWord()
         {
-
+            reset();
         }
 
         //take a string parameter and shift the word by the shift value
         //pre: state has to be off, will encrypt the passed string. String 
         //     validity done in client program
         //post: state becomes on after word gets encrypted
-        public string shift(string word)
+        public string shift(string wordToShift) //doing the actual shift
         {
-            return word;
+            srand(time(NULL));
+            shiftValue = rand() % 26 + 1; // should generate a number between 1 to 26
+
+            word = wordToShift;
+            string temp = startEncrypt(wordToShift); //shift word to lowercase
+            for (unsigned int i = 0; i <= temp.size(); i++)
+            {
+                for (int j = 0; j < ALPHABET_INDEX; j++)
+                {
+                    if (temp[i] == ALPHABET[j])
+                    {
+                        temp[i] = ALPHABET[(j + shiftValue) % 26]; //the actual encrypting
+                        break;//need it to break "if" loop after finding match
+                    }
+                }
+            }
+            state = true;
+            return temp;
         }
 
         //takes an int from client program to guess the shift value generated
@@ -112,8 +129,7 @@ namespace encryptWord
         //post: none
         public int getShiftValue()
         {
-            return 0;
-
+            return shiftValue;
         }
 
         //allow user to get the original word. Change the state of the the program to "off"
@@ -121,6 +137,7 @@ namespace encryptWord
         //post: return orginal word, change of state to off
         public string decode()
         {
+            state = false;
             return word;
         }
 
@@ -130,6 +147,13 @@ namespace encryptWord
         //post: no changes to state, prints out stat
         public void stats()
         {
+            if (numOfGuesses != 0)
+            {
+                Console.WriteLine("{0}Correct shift key is: ", shiftValue);
+                Console.WriteLine("{0}Highest guess is: ", highGuess);
+                Console.WriteLine("{0}Lowest guess is: ", lowGuess);
+                Console.WriteLine("{0}Average shift value guess rounded is: ", averageValue / numOfGuesses);
+            }
 
         }
 
@@ -139,7 +163,13 @@ namespace encryptWord
         //      state when object was created
         public void reset()
         {
-            
+            word = "";
+            lowGuess = 0;
+            highGuess = 0;
+            averageValue = 0;
+            numOfGuesses = 0;
+            shiftValue = 0;
+            state = false;
         }
 
         //allow user to get the state of the object - return true or false
@@ -153,9 +183,9 @@ namespace encryptWord
         //make word all lowercase
         //pre: none
         //post: none
-        private string startEncrypt(string word)
+        private string startEncrypt(string wordToLower)
         {
-            return word;
+            return wordToLower.ToLower();
         }
 
         private string word; //word passed through constructor
@@ -165,9 +195,8 @@ namespace encryptWord
         private int numOfGuesses; //count the number of guesses conducted by user
         private int averageValue; //total up all the value of guesses to get average guess value
         private const int ALPHABET_INDEX = 26; //number of letters in the alphabet
-        private const string ALPHABET =  "abcdefghijklmnopqrstuvwxyz"; //string of alphabet
+        private const string ALPHABET = "abcdefghijklmnopqrstuvwxyz"; //string of alphabet
         private bool state; //keeps track of the current object state
- 
+
     }
 }
-
