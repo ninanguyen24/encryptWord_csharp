@@ -95,18 +95,21 @@ namespace encryptWord
         //post: state becomes on after word gets encrypted
         public string shift(string wordToShift) //doing the actual shift
         {
-            srand(time(NULL));
-            shiftValue = rand() % 26 + 1; // should generate a number between 1 to 26
-
+      
+            Random random = new Random();
+            shiftValue = random.Next(1, 26); //generate number from 1 to 26
+            
             word = wordToShift;
             string temp = startEncrypt(wordToShift); //shift word to lowercase
-            for (unsigned int i = 0; i <= temp.size(); i++)
+            for (int i = 0; i <= temp.Length - 1; i++)
             {
                 for (int j = 0; j < ALPHABET_INDEX; j++)
                 {
                     if (temp[i] == ALPHABET[j])
                     {
-                        temp[i] = ALPHABET[(j + shiftValue) % 26]; //the actual encrypting
+                        StringBuilder sb = new StringBuilder(temp);
+                        sb[i] = ALPHABET[(j + shiftValue) % 26]; //the actual encrypting
+                        temp = sb.ToString();
                         break;//need it to break "if" loop after finding match
                     }
                 }
